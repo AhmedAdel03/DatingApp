@@ -4,6 +4,7 @@ using Api.Data;
 using Api.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Api.Controller
 {
@@ -11,12 +12,12 @@ namespace Api.Controller
     [ApiController]
     public class UserController(AppDbContext Context) : ControllerBase
     {
-        [HttpGet("{UserId}")]
-         public async Task <ActionResult<User>> GetUsers(string UserId)
+        [HttpGet()]
+         public async Task <ActionResult<List<User>>> GetUsers()
         {
-            var members =await  Context.Users.FindAsync(UserId);
+            var members =await  Context.Users.ToListAsync();
             if (members == null) return NotFound("Not Found");
-            return  members;
+            return members;
 
         }
 
