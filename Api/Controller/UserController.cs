@@ -12,10 +12,18 @@ namespace Api.Controller
     [ApiController]
     public class UserController(AppDbContext Context) : ControllerBase
     {
+        [HttpGet("{userId}")]
+        public async Task<ActionResult<User>> GetUsers(string userId)
+        {
+            var user = await Context.Users.FindAsync(userId);
+            if (user == null) return NotFound("Not Found");
+            return Ok(user);
+
+        }
         [HttpGet()]
          public async Task <ActionResult<List<User>>> GetUsers()
         {
-            var members =await  Context.Users.ToListAsync();
+            var members =await Context.Users.ToListAsync();
             if (members == null) return NotFound("Not Found");
             return members;
 
