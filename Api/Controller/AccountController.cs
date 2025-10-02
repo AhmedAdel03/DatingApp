@@ -3,6 +3,7 @@ using System.Text;
 using Api.Data;
 using Api.DTOs;
 using Api.Entities;
+using Api.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,10 +12,10 @@ namespace Api.Controller
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccountController(AppDbContext context) : ControllerBase
+    public class AccountController(AppDbContext context,ITokenService tokenService) : ControllerBase
     {
         [HttpPost("Register")]
-        public async Task<ActionResult> Register(RegisterDTO registerDTO)
+        public async Task<ActionResult<UserDTO>> Register(RegisterDTO registerDTO)
         {
             var hmac = new HMACSHA512();
             var user = new User()
@@ -32,25 +33,37 @@ namespace Api.Controller
             context.Users.Add(user);
             await context.SaveChangesAsync();
 
-
-            return Ok("user registered Success");
+                return new UserDTO
+                {
+                    UserId = user.UserId,
+                    Email = user.Email,
+                    Name = user.Name,
+                    Token=tokenService.CreateToken(user)
+                };
         }
         private async Task<bool> EmailExist(string email)
         {
             return await context.Users.AnyAsync(x => x.Email.ToLower() == email.ToLower());
         }
         [HttpPost("Login")]
-        public async Task<ActionResult> Login(LoginDTO loginDTO)
+        public async Task<ActionResult<UserDTO>> Login(LoginDTO loginDTO)
         {
             var user = await context.Users.FirstOrDefaultAsync(x => x.Email == loginDTO.Email);
             if (user == null) return Unauthorized("Invalid User");
             var hmac = new HMACSHA512(user.PassWordSalt);
             var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDTO.Password));
-            if (computedHash.SequenceEqual(user.PassWordHash))
-                return Ok("login success");
-            else
-                return Unauthorized("password Invalid");
+            if (!computedHash.SequenceEqual(user.PassWordHash))
+                return Ok("password Invalid");
 
+            else
+                return new UserDTO
+                {
+                    UserId = user.UserId,
+                    Email = user.Email,
+                    Name = user.Name,
+                    Token=tokenService.CreateToken(user)
+                };
+            
         }
 
 
