@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Api.Data;
 using Api.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ namespace Api.Controller
     [ApiController]
     public class UserController(AppDbContext Context) : ControllerBase
     {
+        [Authorize]
         [HttpGet("{userId}")]
         public async Task<ActionResult<User>> GetUsers(string userId)
         {

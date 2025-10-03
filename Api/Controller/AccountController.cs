@@ -3,6 +3,7 @@ using System.Text;
 using Api.Data;
 using Api.DTOs;
 using Api.Entities;
+using Api.Extensions;
 using Api.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -33,13 +34,7 @@ namespace Api.Controller
             context.Users.Add(user);
             await context.SaveChangesAsync();
 
-                return new UserDTO
-                {
-                    UserId = user.UserId,
-                    Email = user.Email,
-                    Name = user.Name,
-                    Token=tokenService.CreateToken(user)
-                };
+            return UserExtention.ToDTO(user, tokenService);
         }
         private async Task<bool> EmailExist(string email)
         {
@@ -56,13 +51,7 @@ namespace Api.Controller
                 return Ok("password Invalid");
 
             else
-                return new UserDTO
-                {
-                    UserId = user.UserId,
-                    Email = user.Email,
-                    Name = user.Name,
-                    Token=tokenService.CreateToken(user)
-                };
+                return user.ToDTO(tokenService);
             
         }
 
