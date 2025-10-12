@@ -1,6 +1,7 @@
 using System.Text;
 using Api.Data;
 using Api.Interface;
+using Api.Middleware;
 using Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,7 @@ builder.Services.AddDbContext<AppDbContext>(option =>
     option.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
 
 });
+
 builder.Services.AddCors();
 builder.Services.AddControllers();
 builder.Services.AddScoped<ITokenService, TokenService>();
@@ -35,6 +37,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseCors(option => option.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200", "https://localhost:4200"));
 app.UseAuthentication();
 app.UseAuthorization();
