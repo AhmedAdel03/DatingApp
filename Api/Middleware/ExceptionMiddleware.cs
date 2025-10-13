@@ -1,4 +1,5 @@
 using System;
+using System.Dynamic;
 using System.Net;
 using System.Text.Json;
 using Api.Error;
@@ -6,7 +7,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Api.Middleware;
 
-public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger, IHostEnvironment env)  
+public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger, IHostEnvironment env) 
 {
     
 
@@ -16,19 +17,19 @@ public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddlewa
         {
             await next(context);
         }
-        catch (Exception ex)
+        catch ( Exception ex)
         {
-            logger.LogError(ex,"{message}",ex.Message);
+            logger.LogError(ex.Message, "{message}", ex.Message);
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            var Response = env.IsDevelopment() ? new ApiException(context.Response.StatusCode, ex.Message, ex.StackTrace.ToString())
-              : new ApiException(context.Response.StatusCode, ex.Message, "internal server error");
-            var option = new JsonSerializerOptions
+            var response = env.IsDevelopment() ? new ApiException(context.Response.StatusCode, ex.Message, ex.StackTrace)
+            : new ApiException(context.Response.StatusCode, ex.Message, "internal server error");
+            var JsonOptions = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             };
-            var json = JsonSerializer.Serialize(Response, option);
-            await context.Response.WriteAsync(json);
+            var json = JsonSerializer.Serialize(response, JsonOptions);
+           await  context.Response.WriteAsync(json);  
              
         }
     }
