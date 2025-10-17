@@ -1,8 +1,10 @@
 using System.Text;
 using Api.Data;
+using Api.Data.Repositories;
 using Api.Interface;
 using Api.Middleware;
 using Api.Services;
+using Api.Services.Interface;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -19,6 +21,9 @@ builder.Services.AddDbContext<AppDbContext>(option =>
 builder.Services.AddCors();
 builder.Services.AddControllers();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+builder.Services.AddScoped<IAccountService,AccountService>();
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(option =>
 {
     var tokenKey = builder.Configuration["TokenKey"] ?? throw new Exception("Cannot get Token key");
@@ -42,5 +47,19 @@ app.UseCors(option => option.AllowAnyHeader().AllowAnyMethod().WithOrigins("http
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<AppDbContext>();
+        await context.Database.MigrateAsync();            // ✅ Apply migrations
+        await SeedData.SeedDataFromFile(context);         // ✅ Seed your users/members/photos
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred during migration or seeding");
+    }
+}
 app.Run();

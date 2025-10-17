@@ -12,7 +12,9 @@ public class UserConfig : IEntityTypeConfiguration<User>
         builder.ToTable("users");
         builder.HasKey(x => x.UserId);
         builder.Property(x => x.Name).IsRequired().HasColumnType("TEXT");
-        builder.Property(x=>x.Name).IsRequired().HasColumnType("TEXT");
+        builder.Property(x => x.Name).IsRequired().HasColumnType("TEXT");
+        //Relation
+        builder.HasOne(x => x.Member).WithOne(x => x.User).HasForeignKey<Member>(x => x.Id);
 
     }
 }

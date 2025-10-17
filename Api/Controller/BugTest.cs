@@ -10,7 +10,7 @@ namespace Api.Controller
         [HttpGet("auth")]
         public IActionResult NotAuth()
         {
-            return Unauthorized();
+            return ValidationProblem();
 
         }
         [HttpGet("serverError")]

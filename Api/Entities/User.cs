@@ -10,6 +10,8 @@ public class User
     public required string Name { get; set; }
     public required string Email { get; set; }
     public required byte[] PassWordHash { get; set; }
-    public required byte[] PassWordSalt{ get; set; }
+    public required byte[] PassWordSalt { get; set; }
+    //Nav
+    public Member Member { get; set; } = null!;
 
 }
