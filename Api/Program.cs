@@ -20,6 +20,7 @@ builder.Services.AddDbContext<AppDbContext>(option =>
 
 builder.Services.AddCors();
 builder.Services.AddControllers();
+builder.Services.AddScoped<IMemberRepo, MemberRepo>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IAccountService,AccountService>();

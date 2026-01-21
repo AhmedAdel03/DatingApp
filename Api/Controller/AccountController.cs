@@ -20,7 +20,7 @@ namespace Api.Controller
         public async Task<ActionResult<UserDTO>> Register(RegisterDTO registerDTO)
         {
             var result = await accountService.RegisterAsync(registerDTO);
-            if (result == null) return Unauthorized();
+            if (result == null) return Ok("Email Already exist");
             else
             {
                 return  result;

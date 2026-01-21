@@ -19,12 +19,12 @@ public class Repository<T> (AppDbContext context): IRepository<T> where T:class
     context.Set<T>().Remove(entity);
     }
 
-    public async Task<IEnumerable<T>> GetAllAsync()
+    public async Task<IEnumerable<T>> GetAllAsync(T Entity)
     {
         return await context.Set<T>().ToListAsync();
     }
 
-    public async Task<T?> GetByIdAsync(int id)
+    public async Task<T?> GetByIdAsync(string id)
     {
         return await context.Set<T>().FindAsync(id);
     }
