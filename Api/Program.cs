@@ -24,7 +24,7 @@ builder.Services.AddScoped<IMemberRepo, MemberRepo>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IAccountService,AccountService>();
-
+ 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(option =>
 {
     var tokenKey = builder.Configuration["TokenKey"] ?? throw new Exception("Cannot get Token key");

@@ -4,7 +4,11 @@ using Api.Entities;
 
 namespace Api.Services.Interface;
 
-public interface IMemberRepo:IRepository<Member>
+public interface IMemberRepo 
 {
-    Task<IReadOnlyList<Photo>> GetAllPhotos(string MemberId);
+    public void AddmemberAsync();
+     public void UpdateMemberAsync(Member member);
+     Task<IReadOnlyList<Member>>GetMembersAsync();
+     Task<Member> GetMemberByIdAsync(string id);
+     Task<IReadOnlyList<Photo>>GetMemberPhotosAsync(string id);
 }
