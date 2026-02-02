@@ -29,9 +29,9 @@ public class Repository<T> (AppDbContext context): IRepository<T> where T:class
         return await context.Set<T>().FindAsync(id);
     }
 
-    public async Task SaveChangesAsync()
+    public async Task<bool> SaveChangesAsync()
     {
-        await context.SaveChangesAsync();
+       return await context.SaveChangesAsync()>0;
     }
 
     public void Update(T Entity)

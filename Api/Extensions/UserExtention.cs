@@ -14,6 +14,7 @@ public static class UserExtention
         {
             UserId = user.UserId,
             Name = user.Name,
+             ImageURl=user.ImageURl,
             Email = user.Email,
             Token = tokenService.CreateToken(user)
 

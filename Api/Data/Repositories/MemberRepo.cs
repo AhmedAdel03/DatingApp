@@ -23,7 +23,9 @@ public class MemberRepo : IMemberRepo
 
     public async Task<Member> GetMemberByIdAsync(string id)
     {
-       return await _Context.Members.FindAsync(id);
+        var member=await _Context.Members.FindAsync(id);
+        if(member==null) return null;
+       return member;
     }
 
     public async Task<IReadOnlyList<Photo>> GetMemberPhotosAsync(string id)
@@ -40,6 +42,6 @@ public class MemberRepo : IMemberRepo
 
     public void UpdateMemberAsync(Member member)
     {
-        throw new NotImplementedException();
+         _Context.Entry(member).State=EntityState.Modified;
     }
 }

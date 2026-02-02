@@ -8,7 +8,7 @@ public interface IMemberRepo
 {
     public void AddmemberAsync();
      public void UpdateMemberAsync(Member member);
-     Task<IReadOnlyList<Member>>GetMembersAsync();
-     Task<Member> GetMemberByIdAsync(string id);
-     Task<IReadOnlyList<Photo>>GetMemberPhotosAsync(string id);
+     public Task<IReadOnlyList<Member>>GetMembersAsync();
+    public Task<Member> GetMemberByIdAsync(string id);
+    public Task<IReadOnlyList<Photo>>GetMemberPhotosAsync(string id);
 }

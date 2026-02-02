@@ -6,7 +6,9 @@ also this entity represent the actual member on the app*/
 
 public class SeedDTO
 {
-public string Id { get; set; } = null!;
+    internal string displayname;
+
+    public string Id { get; set; } = null!;
     public DateOnly DateOfBirth { get; set; }
     public required string Email { get; set; }
     public string? ImageUrl { get; set; }
