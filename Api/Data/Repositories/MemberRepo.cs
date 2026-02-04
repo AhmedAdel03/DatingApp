@@ -40,8 +40,10 @@ public class MemberRepo : IMemberRepo
       return await _Context.Members.ToListAsync();
     }
 
-    public void UpdateMemberAsync(Member member)
+    public async Task<Member?> GetMemberForUpdate(string id)
     {
-         _Context.Entry(member).State=EntityState.Modified;
+        return await _Context.Members
+        .Include(x=>x.Photos)
+        .Include(x=>x.User).SingleOrDefaultAsync(x=>x.Id==id);
     }
 }

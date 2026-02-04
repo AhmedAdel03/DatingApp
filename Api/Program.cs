@@ -1,6 +1,7 @@
 using System.Text;
 using Api.Data;
 using Api.Data.Repositories;
+using Api.Helpers;
 using Api.Interface;
 using Api.Middleware;
 using Api.Services;
@@ -21,10 +22,12 @@ builder.Services.AddDbContext<AppDbContext>(option =>
 builder.Services.AddCors();
 builder.Services.AddControllers();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped<IPhotoService,PhotoService>();
 builder.Services.AddScoped<IMemberRepo, MemberRepo>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IAccountService,AccountService>();
+builder.Services.Configure<CloudinarySettting>(builder.Configuration.GetSection("Cloudinary"));
  
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(option =>
 {
