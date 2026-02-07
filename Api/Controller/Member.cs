@@ -85,10 +85,60 @@ namespace Api.Controller
             member.Photos.Add(photo);
                if (await repository.SaveChangesAsync())
             {
-                return Ok("upload Success");
+                return photo;
             }
-            return BadRequest("problem adding photo");
+            return BadRequest("problem uploading photo");
             
+        }
+    [HttpPut("set-main-photo/{photoId}")]
+    public async Task<ActionResult> SetMainPhoto(int photoid)
+    {
+        
+        var memberid=User.FindFirstValue(ClaimTypes.NameIdentifier);
+         if(memberid==null) return Unauthorized(); 
+        var member= await memberRepo.GetMemberForUpdate(memberid);
+        if(member==null)
+            {
+                return BadRequest("u are not member yet");
+            }
+        var photo=member.Photos.SingleOrDefault(x=>x.PhotoId==photoid);
+        if(photo==null) return BadRequest("photo not found");
+        if(photo.PhotoUrl==member.ImageUrl||photo==null)
+            {
+                return BadRequest("Cannot update Photo");
+            }
+            member.ImageUrl=photo.PhotoUrl;
+            member.User.ImageURl=photo.PhotoUrl;
+          if(await repository.SaveChangesAsync())return NoContent();
+          return BadRequest("cannot update");
+            
+        
+
+    }
+    [HttpDelete("DeletePhoto/{photoid}")]
+    public async Task<ActionResult>DeletePhoto(int photoid)
+        {
+            var memberid=User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if(memberid==null) return Unauthorized(); 
+        var member= await memberRepo.GetMemberForUpdate(memberid);
+           if(member==null)
+            {
+                return BadRequest("u are not member yet");
+            }
+        var photo=member.Photos.SingleOrDefault(x=>x.PhotoId==photoid);
+           if(photo==null) return BadRequest("photo not found");
+        if(photo.PhotoUrl==member.ImageUrl) return BadRequest("This main img you cannot remove");
+             
+
+        if(photo.PhotoPublicId!=null)
+            {
+                var result=await photoService.DeletionPhoto(photo.PhotoPublicId);
+                if(result.Error!=null) return BadRequest("error");
+            }
+            member.Photos.Remove(photo);
+            if(await repository.SaveChangesAsync())return NoContent();
+          return BadRequest("cannot Remove photo");
+
         }
 
     }
