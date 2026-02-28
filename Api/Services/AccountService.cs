@@ -25,7 +25,7 @@ public class AccountService(ITokenService tokenService,IAccountRepository accoun
         }
         else
          {
-            return null;
+              throw new Exception("Invalid credentials");;
         }
  
     }
@@ -43,9 +43,19 @@ public class AccountService(ITokenService tokenService,IAccountRepository accoun
             var newUser = new User
             {
                 Email = registerDTO.Email,
-                Name = registerDTO.Name,
+                Name = registerDTO.DisplayName,
                 PassWordHash = password,
-                PassWordSalt = PassWordSalt
+                PassWordSalt = PassWordSalt,
+                Member=new Member
+                {
+                     City=registerDTO.City,
+                     Country=registerDTO.Country,
+                     DateOfBirth=registerDTO.Dateofbirth,
+                     Gender=registerDTO.Gender,
+                     Description=registerDTO.Description,
+                     DisplayName=registerDTO.DisplayName
+                    
+                }
             };
             await accountRepository.AddAsync(newUser);
             await accountRepository.SaveChangesAsync();

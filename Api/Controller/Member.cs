@@ -17,9 +17,15 @@ namespace Api.Controller
         [HttpGet]
         public async Task<IActionResult> GetMembers()
         {
+             var currentUser=User.FindFirstValue(ClaimTypes.NameIdentifier);
             var Data = await memberRepo.GetMembersAsync();
+              
             if (Data.Any())
-                return Ok(Data);
+            {
+                 var filterdata=Data.Where(x=>x.Id!=currentUser);
+                return Ok(filterdata);
+            }
+                
             return NotFound();
 
         }

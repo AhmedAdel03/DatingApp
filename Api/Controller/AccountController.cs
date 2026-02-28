@@ -31,12 +31,17 @@ namespace Api.Controller
         [HttpPost("Login")]
         public async Task<ActionResult<UserDTO>> Login(LoginDTO loginDTO)
         {
-            var result = await accountService.LoginAsync(loginDTO);
-            if (result == null) return Unauthorized();
-            else
+            try
             {
+               var result= await accountService.LoginAsync(loginDTO);
                 return Ok(result);
-            } 
+            }
+            catch (Exception ex)
+            {
+                
+                return Unauthorized(ex.Message);
+            }
+            
             
         }
 

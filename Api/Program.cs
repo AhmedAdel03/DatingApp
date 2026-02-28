@@ -39,8 +39,23 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         ValidateIssuer = false,
         ValidateAudience=false
     };
+    option.Events=new JwtBearerEvents
+    {
+        OnAuthenticationFailed = context =>
+        {
+            if(context.Exception is SecurityTokenExpiredException)
+            {
+                context.Response.Headers.Append("Token-Expired","True");
+            }
+             return Task.CompletedTask;
+        }
+   
 
-});
+    };
+    
+
+}
+ );
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 
 

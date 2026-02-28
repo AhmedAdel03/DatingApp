@@ -11,6 +11,19 @@ namespace Api.Services;
 
 public class TokenService(IConfiguration config) : ITokenService
 {
+    public RefreshToken CreateRefreshToken(User user)
+    {
+         return new RefreshToken
+        {
+            Token= Convert.ToBase64String(RandomNumberGenerator.GetBytes(32)),
+            UserID=user.UserId,
+            IsRevoked=false,
+ 
+        };
+        
+      
+    }
+
     public string CreateToken(User user)
     {
         var TokenKey = config["TokenKey"] ?? throw new Exception("cannot Get TokenKey");

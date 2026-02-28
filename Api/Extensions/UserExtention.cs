@@ -16,7 +16,8 @@ public static class UserExtention
             Name = user.Name,
              ImageURl=user.ImageURl,
             Email = user.Email,
-            Token = tokenService.CreateToken(user)
+            Token = tokenService.CreateToken(user),
+
 
         };
         return UserDTO;
