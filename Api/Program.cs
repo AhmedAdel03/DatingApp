@@ -6,8 +6,11 @@ using Api.Interface;
 using Api.Middleware;
 using Api.Services;
 using Api.Services.Interface;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,7 +24,9 @@ builder.Services.AddDbContext<AppDbContext>(option =>
 
 builder.Services.AddCors();
 builder.Services.AddControllers();
-builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+ builder.Services.AddFluentValidationAutoValidation();
+ builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IPhotoService,PhotoService>();
 builder.Services.AddScoped<IMemberRepo, MemberRepo>();
 builder.Services.AddScoped<ITokenService, TokenService>();
@@ -67,6 +72,7 @@ app.UseCors(option => option.AllowAnyHeader().AllowAnyMethod().WithOrigins("http
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
