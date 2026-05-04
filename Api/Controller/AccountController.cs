@@ -14,7 +14,7 @@ namespace Api.Controller
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccountController(IAccountService accountService) : ControllerBase
+    public class AccountController(IAccountService accountService,ITokenService tokenService) : ControllerBase
     {
         [HttpPost("Register")]
         public async Task<ActionResult<UserDTO>> Register(RegisterDTO registerDTO)
@@ -42,6 +42,17 @@ namespace Api.Controller
                 return Unauthorized(ex.Message);
             }
             
+            
+        }
+        [HttpPost("RefreshToken")]
+        public async Task<ActionResult<UserDTO>> RefreshToken(RefreshTokenDTo refreshTokenDTo)
+        {
+             var user=await tokenService.CheckUserAndRefreshToken(refreshTokenDTo.RefreshToken);
+             if (user==null)
+            {
+                return Unauthorized();
+            }
+            return await UserExtention.ToDTO(user,tokenService);
             
         }
 

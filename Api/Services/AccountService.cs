@@ -21,7 +21,7 @@ public class AccountService(ITokenService tokenService,IAccountRepository accoun
         var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDTO.Password));
         if (computedHash.SequenceEqual(user.PassWordHash))
         {
-            return UserExtention.ToDTO(user, tokenService);
+            return await UserExtention.ToDTO(user, tokenService);
         }
         else
          {
@@ -59,7 +59,7 @@ public class AccountService(ITokenService tokenService,IAccountRepository accoun
             };
             await accountRepository.AddAsync(newUser);
             await accountRepository.SaveChangesAsync();
-            return UserExtention.ToDTO(newUser, tokenService);
+            return await UserExtention.ToDTO(newUser, tokenService);
         }
     }
 }

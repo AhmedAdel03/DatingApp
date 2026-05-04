@@ -8,15 +8,17 @@ namespace Api.Extensions;
 
 public static class UserExtention
 {
-    public static UserDTO ToDTO(this User user, ITokenService tokenService)
+    public static async Task<UserDTO> ToDTO(this User user, ITokenService tokenService)
     {
+        var token=await tokenService.CreateToken(user);
         var UserDTO = new UserDTO
         {
             UserId = user.UserId,
             Name = user.Name,
              ImageURl=user.ImageURl,
             Email = user.Email,
-            Token = tokenService.CreateToken(user),
+            AccessToken =token.AccessToken,
+            RefreshToken=token.RefreshToken
 
 
         };
