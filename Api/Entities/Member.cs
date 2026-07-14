@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Serialization;
 
 namespace Api.Entities;
 
@@ -16,6 +17,10 @@ public class Member
     public required string City { get; set; }
     public required string Country { get; set; }
     //Nav
+    [JsonIgnore]
+    public List<MemberLikes>LikesIRecived { get; set; }=[];
+    public List<MemberLikes>LikesISent { get; set; }=[];
+
     public List<Photo> Photos { get; set; } = [];
     public User User { get; set; } = null!;
 

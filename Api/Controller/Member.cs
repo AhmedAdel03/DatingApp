@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Api.Data.Repositories;
 using Api.DTOs;
 using Api.Entities;
+using Api.Helpers;
 using Api.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -15,18 +16,13 @@ namespace Api.Controller
     public class Member(IMemberRepo memberRepo, IRepository<Member> repository, IPhotoService photoService) : ControllerBase
     {
         [HttpGet]
-        public async Task<IActionResult> GetMembers()
+        public async Task<ActionResult<PaginatedResult<Member>>> GetMembers([FromQuery] MemberParams memberParams)
         {
              var currentUser=User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var Data = await memberRepo.GetMembersAsync();
+             memberParams.CurrentMemberId=currentUser; 
+            var Data = await memberRepo.GetMembersAsync(memberParams);
               
-            if (Data.Any())
-            {
-                 var filterdata=Data.Where(x=>x.Id!=currentUser);
-                return Ok(filterdata);
-            }
-                
-            return NotFound();
+            return Ok(Data);
 
         }
         [HttpGet("{id}")]

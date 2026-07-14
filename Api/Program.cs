@@ -1,6 +1,7 @@
 using System.Text;
 using Api.Data;
 using Api.Data.Repositories;
+using Api.Filters;
 using Api.Helpers;
 using Api.Interface;
 using Api.Middleware;
@@ -23,7 +24,10 @@ builder.Services.AddDbContext<AppDbContext>(option =>
 });
 
 builder.Services.AddCors();
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<LogUserActivity>();
+});
  builder.Services.AddFluentValidationAutoValidation();
  builder.Services.AddValidatorsFromAssemblyContaining<Program>();
  builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -31,6 +35,7 @@ builder.Services.AddScoped<IPhotoService,PhotoService>();
 builder.Services.AddScoped<IMemberRepo, MemberRepo>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+builder.Services.AddScoped<ILikesRepo, LikesRepo>();
 builder.Services.AddScoped<IAccountService,AccountService>();
 builder.Services.Configure<CloudinarySettting>(builder.Configuration.GetSection("Cloudinary"));
  
@@ -61,8 +66,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 
 }
  );
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-
+ 
 
 var app = builder.Build();
 

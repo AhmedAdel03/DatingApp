@@ -83,7 +83,7 @@ public class TokenService(IConfiguration config,AppDbContext context) : ITokenSe
         var TokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddMinutes(1),
+            Expires = DateTime.UtcNow.AddMinutes(60),
             SigningCredentials = Creds
 
         };
