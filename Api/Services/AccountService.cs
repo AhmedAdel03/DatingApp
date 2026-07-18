@@ -21,11 +21,11 @@ public class AccountService(ITokenService tokenService,IAccountRepository accoun
         var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDTO.Password));
         if (computedHash.SequenceEqual(user.PassWordHash))
         {
-            return UserExtention.ToDTO(user, tokenService);
+            return await UserExtention.ToDTO(user, tokenService);
         }
         else
          {
-            return null;
+              throw new Exception("Invalid credentials");;
         }
  
     }
@@ -43,13 +43,23 @@ public class AccountService(ITokenService tokenService,IAccountRepository accoun
             var newUser = new User
             {
                 Email = registerDTO.Email,
-                Name = registerDTO.Name,
+                Name = registerDTO.DisplayName,
                 PassWordHash = password,
-                PassWordSalt = PassWordSalt
+                PassWordSalt = PassWordSalt,
+                Member=new Member
+                {
+                     City=registerDTO.City,
+                     Country=registerDTO.Country,
+                     DateOfBirth=registerDTO.Dateofbirth,
+                     Gender=registerDTO.Gender,
+                     Description=registerDTO.Description,
+                     DisplayName=registerDTO.DisplayName
+                    
+                }
             };
             await accountRepository.AddAsync(newUser);
             await accountRepository.SaveChangesAsync();
-            return UserExtention.ToDTO(newUser, tokenService);
+            return await UserExtention.ToDTO(newUser, tokenService);
         }
     }
 }

@@ -1,12 +1,17 @@
 using System.Text;
 using Api.Data;
 using Api.Data.Repositories;
+using Api.Filters;
+using Api.Helpers;
 using Api.Interface;
 using Api.Middleware;
 using Api.Services;
 using Api.Services.Interface;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,12 +24,21 @@ builder.Services.AddDbContext<AppDbContext>(option =>
 });
 
 builder.Services.AddCors();
-builder.Services.AddControllers();
-builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<LogUserActivity>();
+});
+ builder.Services.AddFluentValidationAutoValidation();
+ builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped<IPhotoService,PhotoService>();
 builder.Services.AddScoped<IMemberRepo, MemberRepo>();
+builder.Services.AddScoped<IMessageRepo, MessageRepo>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+builder.Services.AddScoped<ILikesRepo, LikesRepo>();
 builder.Services.AddScoped<IAccountService,AccountService>();
+builder.Services.Configure<CloudinarySettting>(builder.Configuration.GetSection("Cloudinary"));
  
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(option =>
 {
@@ -36,10 +50,24 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         ValidateIssuer = false,
         ValidateAudience=false
     };
+    option.Events=new JwtBearerEvents
+    {
+        OnAuthenticationFailed = context =>
+        {
+            if(context.Exception is SecurityTokenExpiredException)
+            {
+                context.Response.Headers.Append("Token-Expired","True");
+            }
+             return Task.CompletedTask;
+        }
+   
 
-});
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+    };
+    
 
+}
+ );
+ 
 
 var app = builder.Build();
 
@@ -49,6 +77,7 @@ app.UseCors(option => option.AllowAnyHeader().AllowAnyMethod().WithOrigins("http
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;

@@ -4,18 +4,15 @@ using System.ComponentModel.DataAnnotations;
 namespace Api.DTOs;
 
 public class UpdateProfileDTO
-{    
-    [MinLength(4)]
-    public string? displayname { get; set; }
-        [MinLength(4)]
+{
+
+    public string displayname { get; set; }
 
     public string? Description { get; set; }
-        [MinLength(4)]
 
-    public string? City { get; set; }
-        [MinLength(4)]
+    public string City { get; set; }
 
-    public string? Country { get; set; }
+    public string Country { get; set; }
 
 
 }

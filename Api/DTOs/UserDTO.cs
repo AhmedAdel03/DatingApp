@@ -9,7 +9,9 @@ public class UserDTO
 
     public required string Name { get; set; }
     public string? ImageURl { get; set; }
-    public required string Token { get; set; }
+    public required string AccessToken { get; set; }
+     public required string RefreshToken { get; set; }
+
 
 
 }
