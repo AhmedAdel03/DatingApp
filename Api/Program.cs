@@ -33,6 +33,7 @@ builder.Services.AddControllers(options =>
  builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IPhotoService,PhotoService>();
 builder.Services.AddScoped<IMemberRepo, MemberRepo>();
+builder.Services.AddScoped<IMessageRepo, MessageRepo>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<ILikesRepo, LikesRepo>();

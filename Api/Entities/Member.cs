@@ -20,6 +20,8 @@ public class Member
     [JsonIgnore]
     public List<MemberLikes>LikesIRecived { get; set; }=[];
     public List<MemberLikes>LikesISent { get; set; }=[];
+    public List<Message>MessagesRecived { get; set; }=[];
+    public List<Message>MessagesSent { get; set; }=[];
 
     public List<Photo> Photos { get; set; } = [];
     public User User { get; set; } = null!;
