@@ -34,49 +34,56 @@ namespace Api.Controller
                 Content = createMessageDTO.Content
             };
             messageRepo.AddMessage(message);
-            if(await messageRepo.SaveChangesAsync())
+            if (await messageRepo.SaveChangesAsync())
             {
-                return Ok( MessageExtention.ToDto(message));
+                return Ok(MessageExtention.ToDto(message));
             }
             return BadRequest();
 
         }
+        [Authorize]
+
         [HttpGet]
-        public async Task<ActionResult<PaginatedResult<MessageDTO>>>GetMessageContainer([FromQuery] MessageParams messageParams)
+        public async Task<ActionResult<PaginatedResult<MessageDTO>>> GetMessageContainer([FromQuery] MessageParams messageParams)
         {
-            messageParams.MemberId=User.FindFirstValue(ClaimTypes.NameIdentifier);
+            messageParams.MemberId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             return Ok(await messageRepo.GetMessagesForMember(messageParams));
         }
-          [HttpGet("Thread/{RecipientId}")]
-        public async Task<ActionResult<PaginatedResult<MessageDTO>>>GetMessagesThread(string RecipientId)
+        [Authorize]
+
+        [HttpGet("Thread/{RecipientId}")]
+        public async Task<ActionResult<PaginatedResult<MessageDTO>>> GetMessagesThread(string RecipientId)
         {
-            var CurrentMemberId=User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if(CurrentMemberId==null) return BadRequest();
-            return Ok(await messageRepo.GetMessageThread(CurrentMemberId,RecipientId));
+            var CurrentMemberId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (CurrentMemberId == null) return BadRequest();
+            return Ok(await messageRepo.GetMessageThread(CurrentMemberId, RecipientId));
+
         }
+        [Authorize]
+
         [HttpDelete("{MessageId}")]
-        public async Task<ActionResult>DeleteMessage(string MessageId)
+        public async Task<ActionResult> DeleteMessage(string MessageId)
         {
-          var MemberId=User.FindFirstValue(ClaimTypes.NameIdentifier);
-          var message=await messageRepo.Getmessage(MessageId);
-          if(IsEligibleToDeleteMessage(MemberId,message))
+            var MemberId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var message = await messageRepo.Getmessage(MessageId);
+            if (IsEligibleToDeleteMessage(MemberId, message))
             {
-         message.SenderDeleted=true;
-         message.RecipientDeleted=true;
-         if(await messageRepo.SaveChangesAsync())
+                message.SenderDeleted = true;
+                message.RecipientDeleted = true;
+                if (await messageRepo.SaveChangesAsync())
                 {
                     return Ok();
                 }
                 return BadRequest();
             }
             return BadRequest();
-            
+
         }
         private bool IsEligibleToDeleteMessage(string memberId, Message? message)
-{
-    return message != null &&
-           (message.SenderId == memberId || message.RecipientId == memberId);
-}
+        {
+            return message != null &&
+                   (message.SenderId == memberId || message.RecipientId == memberId);
+        }
 
     }
 }

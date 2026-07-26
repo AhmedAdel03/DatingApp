@@ -7,6 +7,7 @@ using Api.Interface;
 using Api.Middleware;
 using Api.Services;
 using Api.Services.Interface;
+using Api.SignalR;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -39,7 +40,8 @@ builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<ILikesRepo, LikesRepo>();
 builder.Services.AddScoped<IAccountService,AccountService>();
 builder.Services.Configure<CloudinarySettting>(builder.Configuration.GetSection("Cloudinary"));
- 
+builder.Services.AddSignalR();
+builder.Services.AddSingleton<PresenceTracker>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(option =>
 {
     var tokenKey = builder.Configuration["TokenKey"] ?? throw new Exception("Cannot get Token key");
@@ -63,6 +65,20 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
    
 
     };
+    option.Events=new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+          var accessToken=context.Request.Query["access_token"];
+          var path=context.HttpContext.Request.Path;
+          if(!string.IsNullOrWhiteSpace(accessToken)&&path.StartsWithSegments("/hubs"))
+            {
+                context.Token=accessToken;
+            }
+            return Task.CompletedTask;
+        }
+        
+    };
     
 
 }
@@ -73,10 +89,12 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 app.UseMiddleware<ExceptionMiddleware>();
-app.UseCors(option => option.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200", "https://localhost:4200"));
+app.UseCors(option => option.AllowAnyHeader().AllowAnyMethod().AllowCredentials().WithOrigins("http://localhost:4200", "https://localhost:4200"));
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHub<PresenceHub>("hubs/presence");
+app.MapHub<MessageHub>("hubs/Messages");
 
 using (var scope = app.Services.CreateScope())
 {

@@ -33,7 +33,7 @@ namespace Api.Entities
                 RecipientId = message.RecipientId,
                 RecipientDisplayName = message.Recipient.DisplayName,
                 RecipientImgUrl = message.Recipient.ImageUrl,
-                Content = message.Content,
+                Content = message.SenderDeleted ||message.RecipientDeleted?null!:message.Content,
                 DateRead = message.DateRead,
                 MessageSent = message.MessageSent
                 
